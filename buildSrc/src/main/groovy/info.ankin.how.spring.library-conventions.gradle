@@ -1,0 +1,18 @@
+plugins {
+    id 'info.ankin.how.spring.conventions'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}

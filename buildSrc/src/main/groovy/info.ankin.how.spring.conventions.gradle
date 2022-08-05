@@ -1,0 +1,79 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'jacoco'
+}
+
+group = 'info.ankin.how.spring'
+
+java.toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+repositories {
+    mavenCentral()
+}
+
+// https://docs.gradle.org/current/userguide/java_testing.html#sec:configuring_java_integration_tests
+sourceSets {
+    itest {
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+// tell intellij about the sourceSet
+idea {
+    module {
+        sourceDirs -= file('src/itest/java')
+        testSourceDirs += file('src/itest/java')
+    }
+}
+
+configurations {
+    // lombok
+    testCompileOnly.extendsFrom(compileOnly)
+    testAnnotationProcessor.extendsFrom(annotationProcessor)
+    itestCompileOnly.extendsFrom(testCompileOnly)
+    itestAnnotationProcessor.extendsFrom(testAnnotationProcessor)
+
+    // itests
+    itestImplementation.extendsFrom testImplementation
+    itestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+dependencies {
+    implementation platform('org.springframework.boot:spring-boot-dependencies:2.7.2')
+    annotationProcessor platform('org.springframework.boot:spring-boot-dependencies:2.7.2')
+    implementation platform('org.springframework.cloud:spring-cloud-dependencies:2021.0.3')
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'org.mockito:mockito-core:3+'
+    testImplementation 'com.fasterxml.uuid:java-uuid-generator:4.0.1'
+}
+
+// from same page as itest sourceSets block
+def integrationTest = tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.itest.output.classesDirs
+    classpath = sourceSets.itest.runtimeClasspath
+    shouldRunAfter test
+}
+
+// pick up integrationTest coverage file in report
+jacocoTestReport {
+    getExecutionData().from(fileTree(project.buildDir).include("jacoco/*.exec"))
+}
+
+check.dependsOn integrationTest
+
+
+// use junit for all tests
+tasks.withType(Test) { t -> t.useJUnitPlatform() }
