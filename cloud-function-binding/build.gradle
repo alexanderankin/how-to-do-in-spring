@@ -1,0 +1,9 @@
+plugins {
+    id 'info.ankin.how.spring.app-conventions'
+}
+
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-function-context'
+    implementation 'org.springframework.cloud:spring-cloud-stream'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
+}
