@@ -1,0 +1,7 @@
+#server:
+#  ssl:
+#    client-auth: need
+#    trust-store: classpath:certs/keystore.jks
+#    trust-store-password: changeit
+#    key-store: classpath:certs/keystore.jks
+#    key-store-password: changeit
