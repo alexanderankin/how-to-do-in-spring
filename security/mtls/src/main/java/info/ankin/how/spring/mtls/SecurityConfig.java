@@ -11,8 +11,11 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.*;
+import org.springframework.security.web.authentication.preauth.x509.SubjectDnX509PrincipalExtractor;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.io.InputStreamReader;
 import java.security.KeyStore;
@@ -27,7 +30,13 @@ public class SecurityConfig {
     SecurityWebFilterChain applicationSecurity(ServerHttpSecurity httpSecurity) {
         httpSecurity.csrf().disable();
         httpSecurity.authorizeExchange().anyExchange().permitAll();
+        httpSecurity.x509();
         return httpSecurity.build();
+    }
+
+    @Bean
+    ReactiveUserDetailsService userDetailsService() {
+        return username -> Mono.just(User.builder().username(username).password(username).authorities("DEFAULT").build());
     }
 
     @Component

@@ -66,6 +66,13 @@ class MTlsDemoApplicationTest {
         assertThat(result.getResponseBody(), is("world"));
     }
 
+    @Test
+    void test_helloLocalhost() {
+        var result = webTestClient.get().uri("/?defaultGreeting=no").exchange().expectBody(String.class).returnResult();
+        System.out.println(result);
+        assertThat(result.getResponseBody(), is("hello, localhost"));
+    }
+
     @SneakyThrows
     @Test
     void test_failsWithSystemCerts() {
