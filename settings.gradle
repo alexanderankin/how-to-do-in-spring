@@ -1,5 +1,6 @@
 rootProject.name = 'how-to-do-in-spring'
 includeBuild 'buildPlugins'
 include 'cloud-function-binding'
+include 'parsing:jaxb'
 include 'reactive:reactive-metrics'
 include 'reactive:reactor-context'

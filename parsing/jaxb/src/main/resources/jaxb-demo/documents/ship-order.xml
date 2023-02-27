@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://www.w3schools.com/xml/schema_example.asp -->
+<shipOrder orderId="889923"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="../schemas/ship-order.xsd">
+    <orderPerson>John Smith</orderPerson>
+    <shipTo>
+        <name>Ola Nordmann</name>
+        <address>Langgt 23</address>
+        <city>4000 Stavanger</city>
+        <country>Norway</country>
+    </shipTo>
+    <item>
+        <title>Empire Burlesque</title>
+        <note>Special Edition</note>
+        <quantity>1</quantity>
+        <price>10.90</price>
+    </item>
+    <item>
+        <title>Hide your heart</title>
+        <quantity>1</quantity>
+        <price>9.90</price>
+    </item>
+</shipOrder>
