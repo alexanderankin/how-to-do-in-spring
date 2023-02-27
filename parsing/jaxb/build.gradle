@@ -25,6 +25,7 @@ bg.extendsFrom(configurations.implementation)
 
 dependencies {
     beanGeneration 'org.glassfish.jaxb:jaxb-xjc'
+    beanGeneration 'de.plushnikov.xjc:xjc-lombok-plugin:1.0'
 }
 
 '''
@@ -76,6 +77,7 @@ Extensions:
 def genBeans = tasks.register('beanGeneration', JavaExec) {
     it.classpath(bg)
     it.mainClass.set('com.sun.tools.xjc.XJCFacade')
+    it.args '-Xlombok'
     it.args '-d', bgDest.toString()
     it.args '-p', 'info.ankin.how.parsing.jaxb.generated'
     it.args bgSrc.toString()
