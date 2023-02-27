@@ -1,3 +1,4 @@
 rootProject.name = 'how-to-do-in-spring'
 include 'cloud-function-binding'
+include 'reactive:reactive-metrics'
 include 'reactive:reactor-context'
