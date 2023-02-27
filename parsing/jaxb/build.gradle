@@ -2,6 +2,14 @@ plugins {
     id 'info.ankin.how.spring.app-conventions'
 }
 
+def generationGroup = 'generation'
+def libVirtualizationGroup = 'libvirt'
+
+// demo works
+tasks.matching { it.group == generationGroup }.configureEach { it.enabled true }
+// but this part does not
+tasks.matching { it.group == libVirtualizationGroup }.configureEach { it.enabled false }
+
 dependencies {
     // https://stackoverflow.com/a/47412779
     implementation 'javax.xml.bind:jaxb-api'
@@ -75,6 +83,7 @@ Extensions:
   -Xpropertyaccessors :  Use XmlAccessType PROPERTY instead of FIELD for generated classes
 '''
 def genBeans = tasks.register('beanGeneration', JavaExec) {
+    it.group generationGroup
     it.classpath(bg)
     it.mainClass.set('com.sun.tools.xjc.XJCFacade')
     it.args '-Xlombok'
@@ -88,3 +97,81 @@ def genBeans = tasks.register('beanGeneration', JavaExec) {
 }
 
 tasks.named('compileJava').configure { dependsOn genBeans }
+
+def libvirtDist = 'https://github.com/libvirt/libvirt/archive/refs/tags/v9.0.0.zip'
+def libvirtDest = buildDir.toPath().resolve('libvirtSchemas.zip').toString()
+def libvirtUnzip = buildDir.toPath().resolve(java.nio.file.Path.of('resources', 'libvirtSchemas')).toString()
+
+def libvirtDistDownload = tasks.register('libvirtDistDownload') {
+    it.group libVirtualizationGroup
+    it.outputs.file libvirtDest
+    it.doFirst { file(libvirtDest).parentFile.mkdirs() }
+    it.doLast { ant.get(src: libvirtDist,
+            dest: libvirtDest,
+            skipexisting: true,
+            usetimestamp: true) }
+}
+
+def libvirtDistUnzip = tasks.register('libvirtDistUnzip', Copy) {
+    it.group libVirtualizationGroup
+    it.dependsOn libvirtDistDownload
+    it.from zipTree(libvirtDest)
+    it.into libvirtUnzip
+}
+
+def tx = configurations.create 'toXsd'
+dependencies {
+    toXsd 'org.relaxng:trang:20220510'
+}
+
+def libvirtXsd = buildDir.toPath().resolve('tmp').resolve('libvirtXsd')
+def libvirtToXsd = tasks.register('libvirtToXsd') {
+    it.group libVirtualizationGroup
+    it.dependsOn(libvirtDistUnzip)
+    it.outputs.dir(libvirtXsd)
+    it.inputs.dir(libvirtUnzip)
+    /*
+        usage: java com.thaiopensource.relaxng.translate.Driver
+        [-C catalogFileOrUri] [-I rng|rnc|dtd|xml] [-O rng|rnc|dtd|xsd]
+        [-i input-param] [-o output-param] inputFileOrUri ... outputFile
+     */
+    doFirst { libvirtXsd.toFile().mkdirs() }
+    doFirst { libvirtXsd.toFile().eachFile { it.delete() } }
+    doLast {
+        fileTree(libvirtUnzip)
+                .filter { it.name.endsWith('.rng') && !it.name.startsWith('private') }
+                .forEach { File f ->
+                    javaexec {
+                        it.classpath tx
+                        it.mainClass.set 'com.thaiopensource.relaxng.translate.Driver'
+                        it.args '-I', 'rng'
+                        it.args '-O', 'xsd'
+                        it.args f
+                        it.args libvirtXsd.resolve(f.name.replace('.rng', '.xsd')).toString()
+                        it.setIgnoreExitValue true
+                    }
+                }
+    }
+}
+
+def lvBgDest = buildDir.toPath().resolve(java.nio.file.Path.of('generated', 'sources', 'libvirtBeanGeneration'))
+sourceSets.main.java.srcDir lvBgDest
+tasks.register('libvirtDistGenerate', JavaExec) {
+    it.group libVirtualizationGroup
+    it.dependsOn(libvirtToXsd)
+    it.inputs.dir libvirtXsd
+    it.outputs.dir lvBgDest
+
+    it.classpath bg
+    it.mainClass.set 'com.sun.tools.xjc.XJCFacade'
+    it.args '-Xlombok'
+    it.args '-d', lvBgDest.toString()
+    it.args '-p', 'info.ankin.how.parsing.jaxb.generated.libvirt'
+
+    doFirst {
+        lvBgDest.toFile().mkdirs()
+
+        def xsdDir = libvirtXsd.toFile()
+        it.args xsdDir.list().collect { new File(xsdDir, it).toString() }
+    }
+}
