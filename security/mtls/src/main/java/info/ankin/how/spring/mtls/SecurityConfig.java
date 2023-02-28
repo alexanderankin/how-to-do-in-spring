@@ -11,9 +11,10 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.*;
-import org.springframework.security.web.authentication.preauth.x509.SubjectDnX509PrincipalExtractor;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.ReactivePreAuthenticatedAuthenticationManager;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -27,16 +28,17 @@ import java.util.Objects;
 @Configuration
 public class SecurityConfig {
     @Bean
-    SecurityWebFilterChain applicationSecurity(ServerHttpSecurity httpSecurity) {
+    SecurityWebFilterChain applicationSecurity(ServerHttpSecurity httpSecurity,
+                                               ReactiveUserDetailsService certUds) {
         httpSecurity.csrf().disable();
         httpSecurity.authorizeExchange().anyExchange().permitAll();
-        httpSecurity.x509();
+        httpSecurity.x509().authenticationManager(new ReactivePreAuthenticatedAuthenticationManager(certUds));
         return httpSecurity.build();
     }
 
     @Bean
-    ReactiveUserDetailsService userDetailsService() {
-        return username -> Mono.just(User.builder().username(username).password(username).authorities("DEFAULT").build());
+    ReactiveUserDetailsService certUds() {
+        return username -> Mono.just(User.builder().username(username).password(username).authorities("CERTIFICATE").build());
     }
 
     @Component
@@ -72,15 +74,19 @@ public class SecurityConfig {
         }
 
         private KeyStore serverKeyStore() {
-            return keyStore("/certs/rootCA.crt");
+            return keyStore("/certs/rootCA.crt", KeyStoreConfig.KEY_ENTRY);
         }
 
         private KeyStore clientKeyStore() {
-            return keyStore("/certs/localhost.crt");
+            return keyStore("/certs/localhost.crt", KeyStoreConfig.KEY_ENTRY);
+        }
+
+        public static KeyStore keyStore(String name) {
+            return keyStore(name, KeyStoreConfig.BOTH);
         }
 
         @SneakyThrows
-        public static KeyStore keyStore(String name) {
+        public static KeyStore keyStore(String name, KeyStoreConfig config) {
             // set up the store
             KeyStore keyStore = KeyStore.getInstance("JKS");
             keyStore.load(null);
@@ -89,16 +95,22 @@ public class SecurityConfig {
             Certificate cert = CertificateFactory.getInstance("X.509")
                     .generateCertificates(SecurityConfig.class.getResourceAsStream(name))
                     .iterator().next();
-            keyStore.setCertificateEntry("cert", cert);
+            if (config.cert()) keyStore.setCertificateEntry("cert", cert);
 
             // parse the key and save it into the store
             PEMParser pemParser = new PEMParser(new InputStreamReader(Objects.requireNonNull(
                     SecurityConfig.class.getResourceAsStream(name.replace(".crt", ".key")))));
             PrivateKey privateKey = new JcaPEMKeyConverter()
                     .getPrivateKey((PrivateKeyInfo) pemParser.readObject());
-            keyStore.setKeyEntry("cert", privateKey, new char[0], new Certificate[]{cert});
+            if (config.key()) keyStore.setKeyEntry("cert", privateKey, new char[0], new Certificate[]{cert});
 
             return keyStore;
+        }
+
+        public record KeyStoreConfig(boolean cert, boolean key) {
+            public static final KeyStoreConfig BOTH = new KeyStoreConfig(true, true);
+            public static final KeyStoreConfig KEY_ENTRY = new KeyStoreConfig(false, true);
+            public static final KeyStoreConfig CERT = new KeyStoreConfig(true, false);
         }
     }
 }
