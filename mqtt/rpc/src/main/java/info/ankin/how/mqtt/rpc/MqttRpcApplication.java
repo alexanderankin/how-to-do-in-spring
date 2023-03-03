@@ -24,6 +24,7 @@ public class MqttRpcApplication {
     ObjectMapper objectMapper;
 
     public static void main(String[] args) {
+        // docker run -it --rm --name hive -p 1883:1883 -p 8883:8883 hivemq/hivemq-ce:2021.3
         SpringApplication.run(MqttRpcApplication.class, args);
     }
 
