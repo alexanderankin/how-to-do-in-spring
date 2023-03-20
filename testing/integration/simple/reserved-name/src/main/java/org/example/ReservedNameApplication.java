@@ -120,7 +120,8 @@ public class ReservedNameApplication {
 
         @GetMapping("/{name}")
         Hero getHero(@PathVariable String name) {
-            return heroService.getHero(name);
+            return Optional.ofNullable(heroService.getHero(name))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         }
 
         @PostMapping("/{name}")
