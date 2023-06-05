@@ -1,0 +1,20 @@
+plugins {
+    id 'me.champeau.jmh' // version '0.7.1'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def jmhVersion = '1.36'
+
+project.ext.jmhVersion = jmhVersion
+
+dependencies {
+    implementation 'org.openjdk.jmh:jmh-core:' + jmhVersion
+    annotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:' + jmhVersion
+}
+
+configurations {
+    jmhAnnotationProcessor.extendsFrom(annotationProcessor)
+}
