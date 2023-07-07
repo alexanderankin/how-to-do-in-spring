@@ -44,9 +44,9 @@ configurations {
 }
 
 dependencies {
-    implementation platform('org.springframework.boot:spring-boot-dependencies:2.7.2')
-    annotationProcessor platform('org.springframework.boot:spring-boot-dependencies:2.7.2')
-    implementation platform('org.springframework.cloud:spring-cloud-dependencies:2021.0.3')
+    implementation platform('org.springframework.boot:spring-boot-dependencies:2.7.13')
+    annotationProcessor platform('org.springframework.boot:spring-boot-dependencies:2.7.13')
+    implementation platform('org.springframework.cloud:spring-cloud-dependencies:2021.0.7')
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
