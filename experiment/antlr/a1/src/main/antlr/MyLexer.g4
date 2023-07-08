@@ -8,8 +8,8 @@ TICK_STRING: '`' ~'`'* '`';
 
 PACKAGE: 'package';
 
-IDENTIFIER: [a-zA-Z]+;
-
 IMPORT: 'import';
 PAREN_OPEN: '(';
 PAREN_CLOSE: ')';
+
+IDENTIFIER: [a-zA-Z]+;
