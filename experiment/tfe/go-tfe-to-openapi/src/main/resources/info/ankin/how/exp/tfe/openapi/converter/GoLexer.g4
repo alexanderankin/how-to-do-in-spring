@@ -508,7 +508,7 @@ fragment UNICODE_LETTER
     ;
 
 
-mode LSEMI;
+mode NLSEMI;
 
 
 // Treat whitespace as normal

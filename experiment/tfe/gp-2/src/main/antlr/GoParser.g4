@@ -30,7 +30,7 @@ parser grammar GoParser;
 
 options {
 	tokenVocab = GoLexer;
-	superClass = info.ankin.how.exp.tfe.openapi.converter.util.GoParserBase;
+	superClass = info.ankin.how.exp.tfe.gp.gp2.GoParserBase;
 	// superClass = GoParserBase;
 }
 
