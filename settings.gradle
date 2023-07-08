@@ -1,6 +1,7 @@
 rootProject.name = 'how-to-do-in-spring'
 includeBuild 'buildPlugins'
 include 'cloud-function-binding'
+include 'experiment:antlr:a1'
 include 'experiment:tfe:go-tfe-to-openapi'
 include 'experiment:tfe:gp-2'
 include 'experiment:tfe:gp-test'
