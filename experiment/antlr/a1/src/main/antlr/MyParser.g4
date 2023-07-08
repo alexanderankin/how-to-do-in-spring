@@ -4,10 +4,10 @@ options {
     tokenVocab = MyLexer;
 }
 
-sourceFile: commentsSpec packageSpec WHITESPACE+ commentsSpec importSpec WHITESPACE* commentsSpec;
+sourceFile: commentsSpec? packageSpec (NEW_LINE|WHITESPACE)+ commentsSpec? importSpec (NEW_LINE|WHITESPACE)* commentsSpec?;
 
 // any sort of comment section
-commentsSpec: (comment (NEW_LINE|WHITESPACE)*)*;
+commentsSpec: (comment (NEW_LINE|WHITESPACE)*)+;
 
 comment : (commentLine|commentBlock) ;
 

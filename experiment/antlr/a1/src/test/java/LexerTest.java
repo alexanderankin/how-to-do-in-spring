@@ -73,6 +73,12 @@ class LexerTest {
         assertEquals("// abc", parser("// abc").commentsSpec().getText());
         assertEquals("// abc\n// def", parser("// abc\n// def").commentsSpec().getText());
         assertEquals(1, parser("// abc").commentsSpec().comment().size());
+
+        assertEquals(List.of("// abc", "// def"), parser("""
+                // abc
+                // def
+                """).commentsSpec().comment().stream()
+                .map(RuleContext::getText).toList());
     }
 
     @Test
@@ -88,6 +94,19 @@ class LexerTest {
         assertEquals("/*\nabc def\n*/", parser(example).commentsSpec().comment(0).getText());
         assertEquals("// abc", parser(example).commentsSpec().comment(1).getText());
         assertEquals("/* some other text */", parser(example).commentsSpec().comment(2).getText());
+    }
+
+    // more of an end-to-end test - this should always use the sourceFile starting point
+    @Test
+    void test_parsing() {
+        MyParser.SourceFileContext sourceFileContext = parser("""
+                package tfe;
+                import "fmt"
+                // MyResource some resource
+                // type MyResource string;
+                """)
+                .sourceFile();
+        System.out.println(sourceFileContext);
     }
 
     private static class StrictListener implements ANTLRErrorListener {
