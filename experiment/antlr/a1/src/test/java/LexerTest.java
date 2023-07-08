@@ -1,7 +1,7 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.misc.Interval;
 import org.junit.jupiter.api.Test;
 
 import java.util.BitSet;
@@ -100,16 +100,22 @@ class LexerTest {
     @Test
     void test_parsing() {
         MyParser.SourceFileContext sourceFileContext = parser("""
-                package tfe;
-                import "fmt"
-                // MyResource some resource
-                // type MyResource string;
+                // Hello world
+                // welcome to tfe
+
+                package tfe
+
+                import (
+                    "context"
+                    "fmt"
+                    "net/url"
+                )
                 """)
                 .sourceFile();
         System.out.println(sourceFileContext);
     }
 
-    private static class StrictListener implements ANTLRErrorListener {
+    private static class StrictListener extends DiagnosticErrorListener {
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
             throw new RuntimeException("syntaxError: " + msg);
@@ -117,17 +123,31 @@ class LexerTest {
 
         @Override
         public void reportAmbiguity(Parser recognizer, DFA dfa, int startIndex, int stopIndex, boolean exact, BitSet ambigAlts, ATNConfigSet configs) {
-            throw new RuntimeException("reportAmbiguity");
+            String format = "reportAmbiguity d=%s: ambigAlts=%s, input='%s'";
+            String decision = getDecisionDescription(recognizer, dfa);
+            BitSet conflictingAlts = getConflictingAlts(ambigAlts, configs);
+            String text = recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
+            String message = String.format(format, decision, conflictingAlts, text);
+            // throw new RuntimeException("reportAmbiguity: " + message);
         }
 
         @Override
         public void reportAttemptingFullContext(Parser recognizer, DFA dfa, int startIndex, int stopIndex, BitSet conflictingAlts, ATNConfigSet configs) {
-            throw new RuntimeException("reportAttemptingFullContext");
+            String format = "reportAttemptingFullContext d=%s, input='%s'";
+            String decision = getDecisionDescription(recognizer, dfa);
+            String text = recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
+            String message = String.format(format, decision, text);
+            // throw new RuntimeException("reportAttemptingFullContext: " + message);
         }
 
         @Override
         public void reportContextSensitivity(Parser recognizer, DFA dfa, int startIndex, int stopIndex, int prediction, ATNConfigSet configs) {
-            throw new RuntimeException("reportContextSensitivity");
+            String format = "reportContextSensitivity d=%s, input='%s'";
+            String decision = getDecisionDescription(recognizer, dfa);
+            String text = recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
+            String message = String.format(format, decision, text);
+            recognizer.notifyErrorListeners(message);
+            throw new RuntimeException("reportContextSensitivity: " + message);
         }
     }
 }
