@@ -31,7 +31,10 @@ class LexerTest {
     }
 
     MyParser parser(String input) {
-        return new MyParser(new CommonTokenStream(lexer(input)));
+        MyParser myParser = new MyParser(new CommonTokenStream(lexer(input)));
+        myParser.removeErrorListeners();
+        myParser.addErrorListener(new StrictListener());
+        return myParser;
     }
 
     @Test
@@ -43,8 +46,12 @@ class LexerTest {
 
         assertEquals(1, parser("import \"abc\"").importSpec().importStatement().size());
         assertEquals("\"abc\"", parser("import \"abc\"").importSpec().importStatement(0).importSingle().getText());
-        assertEquals(List.of("\"fmt\"", "\"io\""), parser("import (\n  \"fmt\"\n  \"io\")").importSpec().importStatement(0).importMultiple()
-                .importIdentifier().stream().map(RuleContext::getText).toList());
+        assertEquals(List.of("\"fmt\"", "\"io\""),
+                parser("import (\n  \"fmt\"\n  \"io\")").importSpec().importStatement(0).importMultiple()
+                        .importIdentifier().stream().map(RuleContext::getText).toList());
+        assertEquals(List.of("\"fmt\"", "\"io\""),
+                parser("import (\"fmt\"; \"io\")").importSpec().importStatement(0).importMultiple()
+                        .importIdentifier().stream().map(RuleContext::getText).toList());
     }
 
     private static class StrictListener implements ANTLRErrorListener {
