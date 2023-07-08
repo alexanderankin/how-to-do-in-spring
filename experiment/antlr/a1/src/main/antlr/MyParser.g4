@@ -5,6 +5,8 @@ options {
 }
 
 sourceFile: packageSpec WHITESPACE+ importSpec WHITESPACE*;
+//sourceFile: commentsSpec* packageSpec WHITESPACE+ importSpec WHITESPACE*;
+//commentsSpec: COMMENT_START COMMENT_LINE;
 
 packageSpec: PACKAGE IDENTIFIER SEMI_COLON?;
 

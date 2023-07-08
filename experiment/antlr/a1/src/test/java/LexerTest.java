@@ -30,12 +30,21 @@ class LexerTest {
                 .findAny().orElseThrow();
     }
 
+    MyParser parser(String input) {
+        return new MyParser(new CommonTokenStream(lexer(input)));
+    }
+
     @Test
     void test_imports() {
         var tokens = lexer("import").getAllTokens();
         assertEquals(1, tokens.size());
         assertEquals(List.of("import"), tokens.stream().map(Token::getText).toList());
         assertEquals(List.of(MyLexer.IMPORT), tokens.stream().map(Token::getType).toList());
+
+        assertEquals(1, parser("import \"abc\"").importSpec().importStatement().size());
+        assertEquals("\"abc\"", parser("import \"abc\"").importSpec().importStatement(0).importSingle().getText());
+        assertEquals(List.of("\"fmt\"", "\"io\""), parser("import (\n  \"fmt\"\n  \"io\")").importSpec().importStatement(0).importMultiple()
+                .importIdentifier().stream().map(RuleContext::getText).toList());
     }
 
     private static class StrictListener implements ANTLRErrorListener {
