@@ -14,7 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class GpTest {
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         // parser("var abc IPRanges = (*ipRanges)(nil)").varDecl();
         // System.out.println(parser("var i").varDecl().getText());
         // System.out.println(parser("const i").constDecl().getText());
@@ -34,7 +34,7 @@ public class GpTest {
         System.out.println(assignment.children.size());
     }
 
-    public static void main2(String[] args) {
+    public static void main1(String[] args) {
         GoParser.SourceFileContext parse = parse("""
                 package tfe;
 
@@ -43,9 +43,19 @@ public class GpTest {
                 """);
 
         System.out.println(parse.toStringTree());
+        System.out.println(parse.children);
+
+        GoParser.SourceFileContext parse2 = parse("""
+                package tfe;
+
+                var abc IPRanges = (*ipRanges)(nil)
+                """);
+
+        System.out.println(parse2.toStringTree());
+        System.out.println(parse2.children);
     }
 
-    public static void main1(String[] args) {
+    public static void main(String[] args) {
         try (ZipArchive zipArchive = new ZipArchive(Path.of(System.getProperty("user.home"), "resources", "go-tfe.zip"))) {
             List<ZipEntry> goFiles = zipArchive.files().stream()
                     .filter(e -> e.getName().endsWith(".go"))
@@ -56,6 +66,7 @@ public class GpTest {
                 String contents = zipArchive.read(goFile);
                 GoParser.SourceFileContext parsed = parse(contents);
                 System.out.println(parsed.toStringTree());
+                System.out.println(parsed.children.size());
             }
         }
 

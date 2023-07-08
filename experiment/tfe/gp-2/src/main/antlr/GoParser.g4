@@ -48,7 +48,9 @@ importSpec: alias = (DOT | IDENTIFIER)? importPath;
 
 importPath: string_;
 
-declaration: constDecl | typeDecl | varDecl;
+comment: (LINE_COMMENT|COMMENT|COMMENT_NLSEMI|LINE_COMMENT_NLSEMI)+.;
+
+declaration: comment? (constDecl | typeDecl | varDecl);
 
 constDecl: CONST (constSpec | L_PAREN (constSpec eos)* R_PAREN);
 
