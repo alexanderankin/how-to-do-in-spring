@@ -52,6 +52,11 @@ class LexerTest {
         assertEquals(List.of("\"fmt\"", "\"io\""),
                 parser("import (\"fmt\"; \"io\")").importSpec().importStatement(0).importMultiple()
                         .importIdentifier().stream().map(RuleContext::getText).toList());
+        assertEquals(List.of("f \"fmt\"", "\"io\""),
+                parser("import (f \"fmt\"; \"io\")").importSpec().importStatement(0).importMultiple()
+                        .importIdentifier().stream().map(RuleContext::getText).toList());
+        assertEquals("f", parser("import (f \"fmt\"; \"io\")").importSpec().importStatement(0).importMultiple().importIdentifier(0).IDENTIFIER().getText());
+        assertEquals("\"fmt\"", parser("import (f \"fmt\"; \"io\")").importSpec().importStatement(0).importMultiple().importIdentifier(0).DOUBLE_STRING().getText());
     }
 
     private static class StrictListener implements ANTLRErrorListener {

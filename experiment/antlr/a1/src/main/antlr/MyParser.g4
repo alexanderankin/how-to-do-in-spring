@@ -8,7 +8,7 @@ sourceFile: packageSpec WHITESPACE+ importSpec WHITESPACE*;
 //sourceFile: commentsSpec* packageSpec WHITESPACE+ importSpec WHITESPACE*;
 //commentsSpec: COMMENT_START COMMENT_LINE;
 
-packageSpec: PACKAGE IDENTIFIER SEMI_COLON?;
+packageSpec: PACKAGE WHITESPACE* IDENTIFIER WHITESPACE* SEMI_COLON? WHITESPACE*;
 
 importSpec: importStatement+;
 
@@ -22,5 +22,5 @@ importMultiple: PAREN_OPEN
     PAREN_CLOSE (NEW_LINE|WHITESPACE)*;
 
 //importIdentifier : (SINGLE_QUOTE|DOUBLE_QUOTE) IDENTIFIER (SINGLE_QUOTE|DOUBLE_QUOTE) ;
-importIdentifier : SINGLE_STRING | DOUBLE_STRING ;
+importIdentifier : (IDENTIFIER WHITESPACE*)? (SINGLE_STRING | DOUBLE_STRING);
 
