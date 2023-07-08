@@ -5,6 +5,8 @@ SEMI_COLON: ';';
 SINGLE_STRING: '\'' ~'\''* '\'';
 DOUBLE_STRING: '"' ~'"'* '"'; // todo implement ESCAPED_VALUE
 TICK_STRING: '`' ~'`'* '`';
+SINGLE_QUOTE: '\'';
+DOUBLE_QUOTE: '"';
 
 PACKAGE: 'package';
 
