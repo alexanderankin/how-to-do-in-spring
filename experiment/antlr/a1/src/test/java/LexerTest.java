@@ -59,6 +59,12 @@ class LexerTest {
         assertEquals("\"fmt\"", parser("import (f \"fmt\"; \"io\")").importSpec().importStatement(0).importMultiple().importIdentifier(0).DOUBLE_STRING().getText());
     }
 
+    @Test
+    void test_comments() {
+        List<? extends Token> tokens = lexer("//\n//abc").getAllTokens();
+        System.out.println(tokens);
+    }
+
     private static class StrictListener implements ANTLRErrorListener {
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {

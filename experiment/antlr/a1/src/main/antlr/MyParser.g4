@@ -12,7 +12,7 @@ packageSpec: PACKAGE WHITESPACE* IDENTIFIER WHITESPACE* SEMI_COLON? WHITESPACE*;
 
 importSpec: importStatement+;
 
-importStatement: IMPORT (NEW_LINE|WHITESPACE)+ (importSingle|importMultiple);
+importStatement: IMPORT (NEW_LINE|WHITESPACE)+ (importSingle|importMultiple) WHITESPACE*;
 
 importSingle: importIdentifier ((NEW_LINE* SEMI_COLON) | WHITESPACE+)?;
 

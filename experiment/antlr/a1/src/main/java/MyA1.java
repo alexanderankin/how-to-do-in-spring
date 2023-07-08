@@ -11,6 +11,14 @@ import java.util.stream.Collectors;
 
 public class MyA1 {
     public static void main(String[] args) {
+        MyLexer myLexer = new MyLexer(CharStreams.fromString("//\n//abc\n// abc 2\n//"));
+        var map = constants(myLexer.getClass());
+        for (Token token : myLexer.getAllTokens()) {
+            System.out.printf("%s: '%s'%n", map.get(token.getType()), token.getText());
+        }
+    }
+
+    public static void main1(String[] args) {
         MyLexer myLexer = new MyLexer(CharStreams.fromString("import \"fmt\""));
         var map = constants(myLexer.getClass());
         for (Token token : myLexer.getAllTokens()) {
