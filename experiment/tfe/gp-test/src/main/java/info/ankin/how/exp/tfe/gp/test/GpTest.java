@@ -15,9 +15,30 @@ import java.util.zip.ZipFile;
 
 public class GpTest {
     public static void main(String[] args) {
+        // parser("var abc IPRanges = (*ipRanges)(nil)").varDecl();
+        // System.out.println(parser("var i").varDecl().getText());
+        // System.out.println(parser("const i").constDecl().getText());
+        // System.out.println(parser("i := 1").shortVarDecl().DECLARE_ASSIGN());
+        // var x = parser("var i = 1").varDecl();
+        // System.out.println(x);
+
+        System.out.println(parser("int").type_().getText());
+        System.out.println(parser("=").assign_op().getText());
+        System.out.println(parser("i").expressionList().getText());
+        System.out.println(parser("1").expressionList().getText());
+        GoParser.AssignmentContext assignment = parser("i = 1 + 1").assignment();
+        System.out.println(assignment.getText());
+        System.out.println(assignment.children.get(0).getClass().getSimpleName() + ": " + assignment.children.get(0).getText());
+        System.out.println(assignment.children.get(1).getClass().getSimpleName() + ": " + assignment.children.get(1).getText());
+        System.out.println(assignment.children.get(2).getClass().getSimpleName() + ": " + assignment.children.get(2).getText());
+        System.out.println(assignment.children.size());
+    }
+
+    public static void main2(String[] args) {
         GoParser.SourceFileContext parse = parse("""
                 package tfe;
 
+                // abc hi
                 var abc IPRanges = (*ipRanges)(nil)
                 """);
 
@@ -41,11 +62,15 @@ public class GpTest {
     }
 
     private static GoParser.SourceFileContext parse(String contents) {
+        GoParser goParser = parser(contents);
+        return goParser.sourceFile();
+    }
+
+    private static GoParser parser(String contents) {
         var stream = CharStreams.fromString(contents);
         var lexer = new GoLexer(stream);
         var tokens = new CommonTokenStream(lexer);
-        var goParser = new GoParser(tokens);
-        return goParser.sourceFile();
+        return new GoParser(tokens);
     }
 
     static class ZipArchive implements AutoCloseable {
