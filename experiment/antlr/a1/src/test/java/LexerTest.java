@@ -1,3 +1,4 @@
+import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -64,6 +65,11 @@ class LexerTest {
     void test_comments() {
         assertEquals(List.of("//", "\n", "//abc"),
                 lexer("//\n//abc").getAllTokens().stream().map(Token::getText).toList());
+        assertEquals(List.of("// abc", "\n", "// def", "\n"),
+                lexer("""
+                        // abc
+                        // def
+                        """).getAllTokens().stream().map(Token::getText).toList());
         assertEquals(List.of(
                         MyLexer.COMMENT_LINE,
                         MyLexer.NEW_LINE,
@@ -73,6 +79,20 @@ class LexerTest {
         assertEquals("// abc", parser("// abc").commentsSpec().getText());
         assertEquals("// abc\n// def", parser("// abc\n// def").commentsSpec().getText());
         assertEquals(1, parser("// abc").commentsSpec().comment().size());
+        // assertEquals(1, parser("// abc").commentsSpec().comment().size());
+
+        // MyParser parser = parser("""
+        //         // abc
+        //         // def
+        //         """);
+
+        // System.out.println();
+        // var commentLineContext = parser.commentAndNL();
+        // try {
+        //     var commentLineContext1 = parser.commentAndNL();
+        // } catch (Exception e) {
+        //     throw new RuntimeException(e);
+        // }
 
         assertEquals(List.of("// abc", "// def"), parser("""
                 // abc
@@ -98,6 +118,7 @@ class LexerTest {
 
     // more of an end-to-end test - this should always use the sourceFile starting point
     @Test
+    // @org.junit.jupiter.api.Disabled
     void test_parsing() {
         MyParser.SourceFileContext sourceFileContext = parser("""
                 // Hello world
@@ -115,10 +136,12 @@ class LexerTest {
         System.out.println(sourceFileContext);
     }
 
+    @Slf4j
     private static class StrictListener extends DiagnosticErrorListener {
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-            throw new RuntimeException("syntaxError: " + msg);
+            RuntimeException r = new RuntimeException("syntaxError: " + msg);
+            log.error("syntaxError", r);
         }
 
         @Override
@@ -128,7 +151,8 @@ class LexerTest {
             BitSet conflictingAlts = getConflictingAlts(ambigAlts, configs);
             String text = recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
             String message = String.format(format, decision, conflictingAlts, text);
-            // throw new RuntimeException("reportAmbiguity: " + message);
+            RuntimeException r = new RuntimeException("reportAmbiguity: " + message);
+            log.error("reportAmbiguity", r);
         }
 
         @Override
@@ -137,7 +161,8 @@ class LexerTest {
             String decision = getDecisionDescription(recognizer, dfa);
             String text = recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
             String message = String.format(format, decision, text);
-            // throw new RuntimeException("reportAttemptingFullContext: " + message);
+            RuntimeException r = new RuntimeException("reportAttemptingFullContext: " + message);
+            log.error("reportAttemptingFullContext", r);
         }
 
         @Override
@@ -147,7 +172,8 @@ class LexerTest {
             String text = recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
             String message = String.format(format, decision, text);
             recognizer.notifyErrorListeners(message);
-            throw new RuntimeException("reportContextSensitivity: " + message);
+            RuntimeException r = new RuntimeException("reportContextSensitivity: " + message);
+            log.error("reportContextSensitivity", r);
         }
     }
 }
