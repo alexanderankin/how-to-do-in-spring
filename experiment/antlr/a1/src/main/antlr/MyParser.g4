@@ -7,13 +7,14 @@ options {
 sourceFile: commentsSpec packageSpec WHITESPACE+ commentsSpec importSpec WHITESPACE* commentsSpec;
 
 // any sort of comment section
-commentsSpec: (commentLine)*;
+commentsSpec: (comment (NEW_LINE|WHITESPACE)*)*;
+
+comment : (commentLine|commentBlock) ;
 
 // a line comment
-commentLine : COMMENT_START commentLineContent NEW_LINE_IN_LINE_COMMENT_MODE? ;
+commentLine : COMMENT_LINE;
 
-// the contents of the line comment, for convenience
-commentLineContent : REST_OF_LINE? ;
+commentBlock: COMMENT_BLOCK;
 
 packageSpec: PACKAGE WHITESPACE* IDENTIFIER WHITESPACE* SEMI_COLON? WHITESPACE*;
 

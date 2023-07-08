@@ -1,6 +1,7 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.jupiter.api.Test;
 
 import java.util.BitSet;
@@ -61,21 +62,32 @@ class LexerTest {
 
     @Test
     void test_comments() {
-        assertEquals(List.of("//", "\n", "//", "abc"),
+        assertEquals(List.of("//", "\n", "//abc"),
                 lexer("//\n//abc").getAllTokens().stream().map(Token::getText).toList());
         assertEquals(List.of(
-                        MyLexer.COMMENT_START,
-                        MyLexer.NEW_LINE_IN_LINE_COMMENT_MODE,
-                        MyLexer.COMMENT_START,
-                        MyLexer.REST_OF_LINE),
+                        MyLexer.COMMENT_LINE,
+                        MyLexer.NEW_LINE,
+                        MyLexer.COMMENT_LINE),
                 lexer("//\n//abc").getAllTokens().stream().map(Token::getType).toList());
 
         assertEquals("// abc", parser("// abc").commentsSpec().getText());
         assertEquals("// abc\n// def", parser("// abc\n// def").commentsSpec().getText());
-        assertEquals(1, parser("// abc").commentsSpec().commentLine().size());
-        assertEquals(" abc", parser("// abc").commentsSpec().commentLine(0).commentLineContent().getText());
-        assertEquals(" abc", parser("// abc\n// def").commentsSpec().commentLine(0).commentLineContent().getText());
-        assertEquals(" def", parser("// abc\n// def").commentsSpec().commentLine(1).commentLineContent().getText());
+        assertEquals(1, parser("// abc").commentsSpec().comment().size());
+    }
+
+    @Test
+    void test_blockComments() {
+        String example = """
+                /*
+                abc def
+                */
+                // abc
+                /* some other text */
+                """;
+        assertEquals(3, parser(example).commentsSpec().comment().size());
+        assertEquals("/*\nabc def\n*/", parser(example).commentsSpec().comment(0).getText());
+        assertEquals("// abc", parser(example).commentsSpec().comment(1).getText());
+        assertEquals("/* some other text */", parser(example).commentsSpec().comment(2).getText());
     }
 
     private static class StrictListener implements ANTLRErrorListener {
