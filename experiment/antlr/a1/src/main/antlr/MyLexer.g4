@@ -23,4 +23,4 @@ mode LINE_COMMENT_MODE;
 
 //REST_OF_LINE: ~[\r\n]*[\r\n] -> mode(DEFAULT_MODE);
 NEW_LINE_IN_LINE_COMMENT_MODE: [\r\n] -> mode(DEFAULT_MODE);
-REST_OF_LINE: .+?;
+REST_OF_LINE: ~[\r\n]+;

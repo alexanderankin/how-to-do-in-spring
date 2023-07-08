@@ -61,8 +61,14 @@ class LexerTest {
 
     @Test
     void test_comments() {
-        List<? extends Token> tokens = lexer("//\n//abc").getAllTokens();
-        System.out.println(tokens);
+        assertEquals(List.of("//", "\n", "//", "abc"),
+                lexer("//\n//abc").getAllTokens().stream().map(Token::getText).toList());
+        assertEquals(List.of(
+                        MyLexer.COMMENT_START,
+                        MyLexer.NEW_LINE_IN_LINE_COMMENT_MODE,
+                        MyLexer.COMMENT_START,
+                        MyLexer.REST_OF_LINE),
+                lexer("//\n//abc").getAllTokens().stream().map(Token::getType).toList());
     }
 
     private static class StrictListener implements ANTLRErrorListener {
