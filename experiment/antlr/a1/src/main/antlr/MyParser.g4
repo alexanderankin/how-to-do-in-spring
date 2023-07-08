@@ -4,9 +4,16 @@ options {
     tokenVocab = MyLexer;
 }
 
-sourceFile: packageSpec WHITESPACE+ importSpec WHITESPACE*;
-//sourceFile: commentsSpec* packageSpec WHITESPACE+ importSpec WHITESPACE*;
-//commentsSpec: COMMENT_START COMMENT_LINE;
+sourceFile: commentsSpec packageSpec WHITESPACE+ commentsSpec importSpec WHITESPACE* commentsSpec;
+
+// any sort of comment section
+commentsSpec: (commentLine)*;
+
+// a line comment
+commentLine : COMMENT_START commentLineContent NEW_LINE_IN_LINE_COMMENT_MODE? ;
+
+// the contents of the line comment, for convenience
+commentLineContent : REST_OF_LINE? ;
 
 packageSpec: PACKAGE WHITESPACE* IDENTIFIER WHITESPACE* SEMI_COLON? WHITESPACE*;
 

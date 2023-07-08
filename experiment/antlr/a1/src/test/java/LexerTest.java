@@ -69,6 +69,13 @@ class LexerTest {
                         MyLexer.COMMENT_START,
                         MyLexer.REST_OF_LINE),
                 lexer("//\n//abc").getAllTokens().stream().map(Token::getType).toList());
+
+        assertEquals("// abc", parser("// abc").commentsSpec().getText());
+        assertEquals("// abc\n// def", parser("// abc\n// def").commentsSpec().getText());
+        assertEquals(1, parser("// abc").commentsSpec().commentLine().size());
+        assertEquals(" abc", parser("// abc").commentsSpec().commentLine(0).commentLineContent().getText());
+        assertEquals(" abc", parser("// abc\n// def").commentsSpec().commentLine(0).commentLineContent().getText());
+        assertEquals(" def", parser("// abc\n// def").commentsSpec().commentLine(1).commentLineContent().getText());
     }
 
     private static class StrictListener implements ANTLRErrorListener {
