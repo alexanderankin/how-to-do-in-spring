@@ -5,3 +5,8 @@ plugins {
 repositories {
     gradlePluginPortal()
 }
+
+dependencies {
+    // https://github.com/melix/jmh-gradle-plugin
+    implementation 'me.champeau.jmh:jmh-gradle-plugin:0.7.1'
+}

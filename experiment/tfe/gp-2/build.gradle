@@ -1,0 +1,12 @@
+plugins {
+    id 'info.ankin.how.spring.conventions'
+    id 'antlr'
+}
+
+dependencies {
+    antlr 'org.antlr:antlr4:4.13.0'
+}
+
+generateGrammarSource.with {
+    arguments += ['-package', 'info.ankin.how.exp.tfe.gp.gp2']
+}
