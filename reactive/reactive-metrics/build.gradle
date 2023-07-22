@@ -4,4 +4,8 @@ plugins {
 
 dependencies {
     implementation 'io.micrometer:micrometer-core'
+
+    // implementation 'org.springframework.cloud:spring-cloud-starter'
+    // implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j'
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
 }

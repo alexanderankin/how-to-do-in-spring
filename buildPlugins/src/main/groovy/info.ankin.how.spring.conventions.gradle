@@ -27,7 +27,7 @@ sourceSets {
 idea {
     module {
         sourceDirs -= file('src/itest/java')
-        testSourceDirs += file('src/itest/java')
+        testSources.from file('src/itest/java')
     }
 }
 
@@ -77,4 +77,4 @@ check.dependsOn integrationTest
 
 
 // use junit for all tests
-tasks.withType(Test) { t -> t.useJUnitPlatform() }
+tasks.withType(Test).configureEach { t -> t.useJUnitPlatform() }

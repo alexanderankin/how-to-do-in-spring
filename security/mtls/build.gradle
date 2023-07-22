@@ -4,4 +4,6 @@ plugins {
 
 dependencies {
     testImplementation 'com.rabbitmq:amqp-client' // for trusting everything
+
+    implementation 'org.springframework.cloud:spring-cloud-starter'
 }

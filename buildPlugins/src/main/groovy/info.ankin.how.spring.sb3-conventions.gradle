@@ -1,0 +1,9 @@
+plugins {
+    id 'info.ankin.how.spring.conventions'
+}
+
+dependencies {
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.1.2')
+    annotationProcessor platform('org.springframework.boot:spring-boot-dependencies:3.1.2')
+    implementation platform('org.springframework.cloud:spring-cloud-dependencies:2022.0.3')
+}
