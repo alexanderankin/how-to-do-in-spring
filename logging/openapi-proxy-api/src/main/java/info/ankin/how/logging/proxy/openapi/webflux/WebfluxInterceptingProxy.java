@@ -32,13 +32,12 @@ public class WebfluxInterceptingProxy extends WebfluxProxy {
 
     @Override
     protected ServerRequest init(ServerRequest serverRequest) {
-        if (serverRequest.attribute(WebfluxInterceptingProxy.class.getName()).isPresent()) {
-            return serverRequest;
+        var attributes = serverRequest.attributes();
+        if (!attributes.containsKey(WebfluxInterceptingProxy.class.getName())) {
+            attributes.put(WebfluxInterceptingProxy.class.getName(), new Interceptor.Context());
         }
 
-        return ServerRequest.from(serverRequest)
-                .attribute(WebfluxInterceptingProxy.class.getName(), new Interceptor.Context())
-                .build();
+        return serverRequest;
     }
 
     @NonNull
