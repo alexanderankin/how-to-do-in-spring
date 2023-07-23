@@ -1,0 +1,2 @@
+#org.springframework.boot.autoconfigure.AutoConfiguration=\
+#  info.ankin.how.logging.proxy.openapi.config.OpenApiProxyAutoConfiguration

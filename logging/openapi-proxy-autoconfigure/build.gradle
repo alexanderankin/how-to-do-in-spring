@@ -1,0 +1,7 @@
+plugins {
+    id 'info.ankin.how.spring.conventions'
+}
+
+dependencies {
+    implementation(project(':logging:openapi-proxy-api'))
+}

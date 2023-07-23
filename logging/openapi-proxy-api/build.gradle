@@ -1,0 +1,14 @@
+plugins {
+    id 'info.ankin.how.spring.conventions'
+}
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-autoconfigure')
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    compileOnly('org.springframework.cloud:spring-cloud-starter-gateway')
+
+    compileOnly('org.springframework:spring-web')
+    compileOnly('org.springframework:spring-webmvc')
+    compileOnly('org.springframework:spring-webflux')
+}
