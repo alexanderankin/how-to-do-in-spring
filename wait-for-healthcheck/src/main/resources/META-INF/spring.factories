@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.AutoConfiguration=\
+  info.ankin.how.spring.health_waiter.HealthCheckWaiter
