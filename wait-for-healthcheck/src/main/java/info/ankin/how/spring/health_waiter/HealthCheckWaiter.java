@@ -13,7 +13,6 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.util.retry.Retry;
 
 import java.net.URI;
@@ -31,6 +30,7 @@ public class HealthCheckWaiter {
     @Autowired
     public void performHealthCheck(HealthCheckWaiterProperties properties) {
         Flux.fromIterable(properties.getHealthChecks().values())
+                .parallel()
                 .flatMap(this::perform)
                 .then()
                 .block();
@@ -48,6 +48,7 @@ public class HealthCheckWaiter {
                 .timeout(Duration.ofSeconds(healthCheck.getTimeoutSeconds()))
                 .retryWhen(Retry.fixedDelay(healthCheck.getFailureThreshold() - 1,
                         Duration.ofSeconds(healthCheck.getPeriodSeconds())))
+                .repeat(healthCheck.getSuccessThreshold())
                 .then();
     }
 
