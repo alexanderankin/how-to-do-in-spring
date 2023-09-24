@@ -6,7 +6,7 @@ import org.xmlunit.builder.Input;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 public class JAXBDemoApplication {
     @SneakyThrows

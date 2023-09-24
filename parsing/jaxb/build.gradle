@@ -12,7 +12,7 @@ tasks.matching { it.group == libVirtualizationGroup }.configureEach { it.enabled
 
 dependencies {
     // https://stackoverflow.com/a/47412779
-    implementation 'javax.xml.bind:jaxb-api'
+    // implementation 'javax.xml.bind:jaxb-api'
     // JAX-B dependencies for JDK 9+ https://stackoverflow.com/a/43574427
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api' // :2.3.2'
     runtimeOnly 'org.glassfish.jaxb:jaxb-runtime' // :2.3.2'
@@ -20,7 +20,7 @@ dependencies {
 }
 
 def bgSrc = projectDir.toPath().resolve(java.nio.file.Path.of('src', 'main/resources/jaxb-demo/schemas/ship-order.xsd'.split('/')))
-def bgDest = buildDir.toPath().resolve(java.nio.file.Path.of('generated', 'sources', 'beanGeneration'))
+def bgDest = layout.buildDirectory.asFile.get().toPath().resolve(java.nio.file.Path.of('generated', 'sources', 'beanGeneration'))
 
 sourceSets.main {
     java {
@@ -99,8 +99,8 @@ def genBeans = tasks.register('beanGeneration', JavaExec) {
 tasks.named('compileJava').configure { dependsOn genBeans }
 
 def libvirtDist = 'https://github.com/libvirt/libvirt/archive/refs/tags/v9.0.0.zip'
-def libvirtDest = buildDir.toPath().resolve('libvirtSchemas.zip').toString()
-def libvirtUnzip = buildDir.toPath().resolve(java.nio.file.Path.of('resources', 'libvirtSchemas')).toString()
+def libvirtDest = layout.buildDirectory.asFile.get().toPath().resolve('libvirtSchemas.zip').toString()
+def libvirtUnzip = layout.buildDirectory.asFile.get().toPath().resolve(java.nio.file.Path.of('resources', 'libvirtSchemas')).toString()
 
 def libvirtDistDownload = tasks.register('libvirtDistDownload') {
     it.group libVirtualizationGroup
@@ -124,7 +124,7 @@ dependencies {
     toXsd 'org.relaxng:trang:20220510'
 }
 
-def libvirtXsd = buildDir.toPath().resolve('tmp').resolve('libvirtXsd')
+def libvirtXsd = layout.buildDirectory.asFile.get().toPath().resolve('tmp').resolve('libvirtXsd')
 def libvirtToXsd = tasks.register('libvirtToXsd') {
     it.group libVirtualizationGroup
     it.dependsOn(libvirtDistUnzip)
@@ -154,7 +154,7 @@ def libvirtToXsd = tasks.register('libvirtToXsd') {
     }
 }
 
-def lvBgDest = buildDir.toPath().resolve(java.nio.file.Path.of('generated', 'sources', 'libvirtBeanGeneration'))
+def lvBgDest = layout.buildDirectory.asFile.get().toPath().resolve(java.nio.file.Path.of('generated', 'sources', 'libvirtBeanGeneration'))
 sourceSets.main.java.srcDir lvBgDest
 tasks.register('libvirtDistGenerate', JavaExec) {
     it.group libVirtualizationGroup
