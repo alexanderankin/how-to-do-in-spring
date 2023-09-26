@@ -1,0 +1,14 @@
+plugins {
+    id 'info.ankin.how.spring.app-conventions'
+}
+
+configurations.configureEach {
+    it.exclude(group: 'org.springframework.boot', module: 'spring-boot-starter-security')
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.postgresql:postgresql'
+    implementation 'com.h2database:h2'
+}
