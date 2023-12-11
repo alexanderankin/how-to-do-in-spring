@@ -159,7 +159,7 @@ class AdaOnAAISExample {
     @Data
     @Accessors(chain = true)
     static class ModelConfig {
-        String deployment;
+        String deployment = "ada";
     }
 
     @Data
