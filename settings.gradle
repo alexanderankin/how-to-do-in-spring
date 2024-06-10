@@ -3,6 +3,7 @@ includeBuild 'buildPlugins'
 
 // include 'benchmarks:jmh:parsing:test'
 include 'cloud-function-binding'
+include 'db:jooq'
 include 'experiment:tfe:go-tfe-to-openapi'
 include 'experiment:tfe:gp-2'
 include 'experiment:tfe:gp-test'

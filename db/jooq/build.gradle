@@ -1,0 +1,103 @@
+plugins {
+    id 'info.ankin.how.spring.app-conventions'
+    // id("org.jooq.jooq-codegen-gradle") version "3.19.9"
+}
+
+sourceSets {
+    downloadSakila {
+    }
+
+    generateJooqCode {
+    }
+}
+
+configurations {
+    downloadSakilaImplementation.extendsFrom(implementation)
+    downloadSakilaAnnotationProcessor.extendsFrom(annotationProcessor)
+    downloadSakilaCompileOnly.extendsFrom(compileOnly)
+
+    generateJooqCodeImplementation.extendsFrom(implementation)
+    generateJooqCodeAnnotationProcessor.extendsFrom(annotationProcessor)
+    generateJooqCodeCompileOnly.extendsFrom(compileOnly)
+
+    // jooqCodeImplementation.extendsFrom(implementation)
+    // jooqCodeAnnotationProcessor.extendsFrom(annotationProcessor)
+    // jooqCodeCompileOnly.extendsFrom(compileOnly)
+
+    // jooqCodegen.extendsFrom(implementation)
+}
+
+dependencies {
+    // jooqCodegen('org.postgresql:postgresql')
+    // jooqCodegen('org.testcontainers:postgresql')
+    generateJooqCodeImplementation('org.postgresql:postgresql')
+    generateJooqCodeImplementation('org.testcontainers:postgresql')
+
+    generateJooqCodeImplementation group: 'org.jooq', name: 'jooq', version: '3.19.9'
+    generateJooqCodeImplementation group: 'org.jooq', name: 'jooq-meta', version: '3.19.9'
+    generateJooqCodeImplementation group: 'org.jooq', name: 'jooq-codegen', version: '3.19.9'
+    // runtime group: 'com.h2database', name: 'h2', version: '1.4.177'
+
+    implementation group: 'org.jooq', name: 'jooq', version: '3.19.9'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+}
+
+def schemaLocation = project.projectDir.toPath().resolve(java.nio.file.Path.of('build', 'schema.sql'))
+def generatedLocation = project.projectDir.toPath().resolve(java.nio.file.Path.of('build', 'generated', 'sources', 'jooq', 'main', 'java'))
+
+task 'debugit' {
+    doLast {
+        println schemaLocation
+    }
+}
+
+tasks.register('downloadSakilaSchema', JavaExec) {
+    inputs.files(sourceSets.downloadSakila.java.srcDirs)
+    outputs.file schemaLocation
+    classpath(sourceSets.downloadSakila.runtimeClasspath)
+    systemProperty 'destination', schemaLocation.toString()
+    mainClass.set 'task.DownloadSakilaSchema'
+}
+
+def gjc = tasks.register('generateJooqCode', JavaExec) {
+    inputs.files(tasks.named('downloadSakilaSchema'))
+    outputs.dir generatedLocation
+    classpath(sourceSets.generateJooqCode.runtimeClasspath)
+    systemProperty 'schema', schemaLocation.toString()
+    systemProperty 'destination', generatedLocation.toString()
+    mainClass.set 'task.GenerateJooqCode'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir(gjc)
+        }
+    }
+}
+
+/*
+jooq.configuration { c ->
+    c.generator { g ->
+        g.database { d ->
+            d.inputSchema 'public'
+        }
+        g.target { t ->
+            t.packageName 'org.example.database.jooq'
+            t.directory 'src/main/java'
+        }
+    }
+    c.jdbc { j ->
+        // j.driver ''
+        j.url 'jdbc:tc:postgresql:16-alpine:///sakila?TC_TMPFS=/testtmpfs:rw&TC_INITSCRIPT=file:' + schemaLocation
+        // j.schema ''
+        // j.user ''
+        j.username ''
+        j.password ''
+        // j.autoCommit ''
+        // j.initScript ''
+        // j.initSeparator ''
+    }
+}
+*/
