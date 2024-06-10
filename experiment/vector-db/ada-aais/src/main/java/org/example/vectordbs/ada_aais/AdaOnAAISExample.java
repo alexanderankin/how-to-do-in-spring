@@ -165,19 +165,19 @@ class AdaOnAAISExample {
     @Data
     @Accessors(chain = true)
     static class Config {
-        Oai oai;
-        Ais ais;
+        OaiKey oai;
+        AisKey ais;
 
         @Data
         @Accessors(chain = true)
-        static class Oai {
+        static class OaiKey {
             String key = "";
             String endpoint = "";
         }
 
         @Data
         @Accessors(chain = true)
-        static class Ais {
+        static class AisKey {
             String queryKey = "";
             String endpoint = "";
         }
