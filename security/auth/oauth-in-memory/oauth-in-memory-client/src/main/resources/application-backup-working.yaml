@@ -1,0 +1,42 @@
+spring-auth-server:
+  base-url: 'http://localhost:9000'
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          my-client:
+            client-name: Log In with Spring Auth Server
+            client-id: 'oidc-client'
+            client-secret: 'secret'
+            authorization-grant-type: authorization_code
+            # doesn't work
+            redirect-uri: http://localhost:8080/oauth2/authorize
+            # redirect-uri: http://127.0.0.1:8080/login/oauth2/code/{registrationId}
+            scope:
+              - openid
+              - profile
+              - email
+            provider: spring-auth-server
+          my-client2:
+            client-name: Log In with Spring Auth Server2
+            client-id: 'oidc-client'
+            client-secret: 'secret'
+            authorization-grant-type: authorization_code
+            # redirect-uri: http://localhost:8080/oauth2/authorize
+            # org.springframework.security.oauth2.client.registration.ClientRegistration.Builder#redirectUri (6.3.1)
+            # works
+            redirect-uri: http://127.0.0.1:8080/login/oauth2/code/{registrationId}
+            scope:
+              - openid
+              - profile
+              - email
+            provider: spring-auth-server
+        provider:
+          spring-auth-server:
+            authorization-uri: ${spring-auth-server.base-url}/oauth2/v1/authorize
+            token-uri: ${spring-auth-server.base-url}/oauth2/v1/token
+            user-info-uri: ${spring-auth-server.base-url}/oauth2/v1/userinfo
+            jwk-set-uri: ${spring-auth-server.base-url}/oauth2/v1/keys
+            user-name-attribute: sub

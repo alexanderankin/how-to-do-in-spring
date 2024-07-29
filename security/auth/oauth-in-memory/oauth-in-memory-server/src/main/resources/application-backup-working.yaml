@@ -1,0 +1,46 @@
+server:
+  port: 9000
+
+logging:
+  level:
+    org.springframework.security: trace
+
+spring:
+  security:
+    user:
+      name: user
+      password: password
+    oauth2:
+      authorizationserver:
+        client:
+          oidc-client:
+            registration:
+              client-id: "oidc-client"
+              client-secret: "{noop}secret"
+              client-authentication-methods:
+                - "client_secret_basic"
+              authorization-grant-types:
+                - "authorization_code"
+                - "refresh_token"
+              redirect-uris:
+                - "http://127.0.0.1:8080/login/oauth2/code/my-client"
+                - "http://127.0.0.1:8080/login/oauth2/code/my-client2"
+                - "http://localhost:8080/login/oauth2/code/my-client"
+                - "http://localhost:8080/login/oauth2/code/my-client2"
+              post-logout-redirect-uris:
+                - "http://127.0.0.1:8080/"
+              scopes:
+                - "openid"
+                - "profile"
+                - "email"
+            require-authorization-consent: true
+        endpoint:
+          authorization-uri: /oauth2/v1/authorize
+          device-authorization-uri: /oauth2/v1/device_authorization
+          device-verification-uri: /oauth2/v1/device_verification
+          token-uri: /oauth2/v1/token
+          jwk-set-uri: /oauth2/v1/keys
+          token-revocation-uri: /oauth2/v1/revoke
+          token-introspection-uri: /oauth2/v1/introspect
+          oidc:
+            user-info-uri: /oauth2/v1/userinfo
