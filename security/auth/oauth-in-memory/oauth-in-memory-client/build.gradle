@@ -15,4 +15,8 @@ dependencies {
 
     // views lol
     implementation 'org.springframework.boot:spring-boot-starter-mustache'
+    // https://mvnrepository.com/artifact/org.webjars/webjars-locator
+    implementation 'org.webjars:webjars-locator:0.52'
+    // https://mvnrepository.com/artifact/org.webjars.npm/bootstrap
+    implementation 'org.webjars.npm:bootstrap:5.3.3'
 }
