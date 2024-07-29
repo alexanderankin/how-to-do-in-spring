@@ -12,6 +12,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.rnorth.duct-tape:duct-tape:1.0.8'
 
     // views lol
     implementation 'org.springframework.boot:spring-boot-starter-mustache'

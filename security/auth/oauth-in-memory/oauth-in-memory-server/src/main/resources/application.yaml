@@ -28,7 +28,7 @@ spring:
                 - "http://localhost:8080/login/oauth2/code/my-client"
                 - "http://localhost:8080/login/oauth2/code/my-client2"
               post-logout-redirect-uris:
-                - "http://127.0.0.1:8080/"
+                - "http://127.0.0.1:8080"
               scopes:
                 - "openid"
                 - "profile"

@@ -40,6 +40,8 @@ spring:
             provider: spring-auth-server
         provider:
           spring-auth-server:
+            # necessary to find logout url
+            issuer-uri: ${spring-auth-server.base-url}
             authorization-uri: ${spring-auth-server.base-url}/oauth2/v1/authorize
             token-uri: ${spring-auth-server.base-url}/oauth2/v1/token
             user-info-uri: ${spring-auth-server.base-url}/oauth2/v1/userinfo
